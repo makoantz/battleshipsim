@@ -1,26 +1,32 @@
 import React, { useState, useMemo } from 'react';
 import './GameReplay.css';
 
+// --- NEW: Color mapping for ships ---
+const SHIP_COLORS = {
+  // Define colors for the classic ship set names.
+  // We can add more for other configurations if needed.
+  "Carrier": "#FF6347",    // Tomato Red
+  "Battleship": "#4682B4", // Steel Blue
+  "Cruiser": "#32CD32",    // Lime Green
+  "Submarine": "#FFD700",  // Gold
+  "Destroyer": "#9370DB",  // Medium Purple
+  // A default color for any ship not in this list
+  "default": "#778899"     // Light Slate Gray
+};
+
 /**
  * A component to visually replay the shot sequence of a sample game.
  * 
  * @param {Object} props - Component props.
  * @param {Object} props.sampleGame - The sample_game object from the API.
- *                                    { shots: [...], solution_grid: [...] }
  */
 function GameReplay({ sampleGame }) {
   const [replayStep, setReplayStep] = useState(0);
 
-  // useMemo will re-calculate the board state only when the step changes,
-  // which is more efficient than recalculating on every render.
   const currentBoardState = useMemo(() => {
     if (!sampleGame) return [];
-
     const boardSize = sampleGame.solution_grid.length;
-    // Start with an empty 'UNKNOWN' board
     const board = Array(boardSize).fill(null).map(() => Array(boardSize).fill('UNKNOWN'));
-
-    // Replay shots up to the current step
     for (let i = 0; i < replayStep; i++) {
       const [r, c] = sampleGame.shots[i];
       if (sampleGame.solution_grid[r][c] !== null) {
@@ -45,22 +51,25 @@ function GameReplay({ sampleGame }) {
         {currentBoardState.map((row, r) => (
           <div key={r} className="replay-row">
             {row.map((cell, c) => {
-              // Determine if the cell contains a ship segment in the solution
-              const isShip = sampleGame.solution_grid[r][c] !== null;
-              // Determine if this cell is the most recent shot
+              const shipName = sampleGame.solution_grid[r][c];
+              const isShip = shipName !== null;
               const isLastShot = replayStep > 0 && sampleGame.shots[replayStep - 1][0] === r && sampleGame.shots[replayStep - 1][1] === c;
 
-              // The final class depends on the cell state and if it's a ship
+              // --- MODIFIED: Dynamic Styling ---
+              const style = {};
               let cellClass = `replay-cell cell-${cell}`;
-              if (cell === 'UNKNOWN' && isShip) {
-                cellClass += ' cell-ship-hidden';
+              
+              if (cell === 'HIT' && isShip) {
+                // If it's a hit on a ship, apply the ship's specific color
+                style.backgroundColor = SHIP_COLORS[shipName] || SHIP_COLORS.default;
               }
+              
               if (isLastShot) {
                 cellClass += ' cell-last-shot';
               }
 
               return (
-                <div key={c} className={cellClass}>
+                <div key={c} className={cellClass} style={style}>
                   {cell === 'HIT' ? '✕' : ''}
                 </div>
               );

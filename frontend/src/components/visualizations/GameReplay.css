@@ -1,4 +1,3 @@
-
 /* Styling for the GameReplay component */
 
 .replay-container {
@@ -18,13 +17,13 @@
   grid-template-columns: repeat(10, 1fr);
   border: 2px solid #333;
   width: 100%;
-  max-width: 400px; /* Limit the max width of the grid */
+  max-width: 400px;
   margin: 0 auto;
-  aspect-ratio: 1 / 1; /* Make the grid a perfect square */
+  aspect-ratio: 1 / 1;
 }
 
 .replay-row {
-  display: contents; /* Allows cells to be direct children of the grid */
+  display: contents;
 }
 
 .replay-cell {
@@ -37,7 +36,8 @@
   justify-content: center;
   font-size: 1.5rem;
   font-weight: bold;
-  user-select: none; /* Prevents text selection on cells */
+  user-select: none;
+  color: #fff; /* Make the 'X' always white */
 }
 
 /* --- Cell State Styling --- */
@@ -45,18 +45,15 @@
   background-color: #ffffff;
 }
 
-/* For debugging: show where ships are hidden */
-.cell-ship-hidden {
-  /* background-color: #e0e0e0; */
-}
-
 .cell-MISS {
   background-color: #dbeaff;
 }
 
+/* --- MODIFIED: Remove hardcoded red background --- */
 .cell-HIT {
-  background-color: #ff8a80; /* Red for hit */
-  color: #fff;
+  /* The background color is now set by an inline style in the component */
+  /* We can keep a fallback color if needed, but it's not necessary */
+  background-color: #778899; /* Default gray, will be overridden */
 }
 
 /* Highlight the very last shot */

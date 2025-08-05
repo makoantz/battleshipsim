@@ -2,150 +2,130 @@ import random
 from collections import deque
 from typing import List, Tuple, Set
 
-# Import the base class and type hints
 from .base import TargetingAlgorithm, BoardState, HitHistory
 
-class P2M2Enhanced(TargetingAlgorithm):
+class P2M2(TargetingAlgorithm):
     """
-    Implements the Enhanced P2M2 strategy with a checkerboard constraint.
+    Implements the P2M2 strategy with a SYSTEMATIC DIAGONAL hunt pattern.
 
-    This algorithm fuses a systematic checkerboard hunt with the P2M2 targeting
-    pattern, which naturally maintains parity.
-
-    1. HUNT: A random parity (light/dark squares) is chosen. The hunt proceeds
-       by firing only at squares of that parity, guaranteeing coverage.
-    2. TARGET: Triggered on a hit. The logic follows a strict priority:
-       - Priority 1 (Midpoint): If a P2M2 shot scores a hit, immediately
-         target the midpoint between the two hits.
-       - Priority 2 (P2M2): Fire at (+/-2, 0) and (0, +/-2). This naturally
-         stays on the same checkerboard color as the hunt.
-       - Priority 3 (Adjacent): If P2M2 is exhausted, fire at adjacent squares
-         to handle touching ships.
-       - If all patterns for a hit are exhausted, revert to the HUNT mode.
+    1. HUNT: Starts on a random edge and sweeps diagonally across the board,
+       maintaining checkerboard parity. This is not random but a continuous path.
+    2. P2M2 TARGET (First 4 Ships): On a hit, if it is one of the first four
+       ships found, it uses the (x±2, y) and (x, y±2) pattern.
+    3. TRADITIONAL TARGET (Ships 5+): After the fourth ship is found, it reverts
+       to a simple adjacent-square targeting mode for all subsequent ships.
     """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.mode = 'HUNT'
         self.fired_shots: Set[Tuple[int, int]] = set()
-        self.hunt_targets: List[Tuple[int, int]] = []
-        self.chosen_parity = 0 # 0 for even/light, 1 for odd/dark
-
-        self.priority_hits: deque[Tuple[int, int]] = deque()
-        self.all_hits: Set[Tuple[int, int]] = set()
-        
-        # State variables for midpoint targeting
-        self.last_hit_for_midpoint: Tuple[int, int] = None
-        self.last_shot_was_p2m2_hit = False
-
+        self.hunt_targets: deque[Tuple[int, int]] = deque()
+        self.priority_targets: deque[Tuple[int, int]] = deque()
+        self.active_hits: Set[Tuple[int, int]] = set()
+        self.ships_found_count = 0
         self.reset()
 
     @property
     def name(self) -> str:
-        return "P2M2 Enhanced"
+        return "P2M2 (Diagonal Hunt)"
+
+    def _generate_diagonal_hunt_paths(self) -> List[Tuple[int, int]]:
+        """Generates a systematic list of coordinates by sweeping diagonally."""
+        paths = []
+        # Generate diagonals from top-left to bottom-right
+        for k in range(self.board_size * 2 - 1):
+            path = []
+            for r in range(self.board_size):
+                c = k - r
+                if 0 <= c < self.board_size:
+                    path.append((r, c))
+            # Reverse every other path for a sweeping "snake" motion
+            if k % 2 == 1:
+                path.reverse()
+            paths.extend(path)
+        return paths
 
     def reset(self):
         """Resets the algorithm's state for a new game."""
         self.mode = 'HUNT'
         self.fired_shots.clear()
-        self.priority_hits.clear()
-        self.all_hits.clear()
-        self.last_hit_for_midpoint = None
-        self.last_shot_was_p2m2_hit = False
+        self.priority_targets.clear()
+        self.active_hits.clear()
+        self.ships_found_count = 0
         
-        # At the start of a game, randomly choose which parity to hunt on
-        self.chosen_parity = random.choice([0, 1])
+        # Generate the systematic diagonal path
+        diagonal_path = self._generate_diagonal_hunt_paths()
+        
+        # Start from a random edge square and order the hunt from there
+        edge_squares = [
+            (r, c) for r in range(self.board_size) for c in range(self.board_size) 
+            if r == 0 or r == self.board_size - 1 or c == 0 or c == self.board_size - 1
+        ]
+        start_pos = random.choice(edge_squares)
+        
+        try:
+            start_index = diagonal_path.index(start_pos)
+            # Rotate the path so it starts at our random edge point
+            ordered_path = diagonal_path[start_index:] + diagonal_path[:start_index]
+        except ValueError:
+            ordered_path = diagonal_path # Fallback
 
-        # Generate checkerboard targets based on the chosen parity
-        primary_parity_squares = []
-        secondary_parity_squares = []
-        for r in range(self.board_size):
-            for c in range(self.board_size):
-                if (r + c) % 2 == self.chosen_parity:
-                    primary_parity_squares.append((r, c))
-                else:
-                    secondary_parity_squares.append((r, c))
-        
-        random.shuffle(primary_parity_squares)
-        random.shuffle(secondary_parity_squares)
-        
-        # Hunt the chosen parity first, with the other as a fallback
-        self.hunt_targets = primary_parity_squares + secondary_parity_squares
+        # Filter the path by checkerboard parity for efficiency
+        parity = (start_pos[0] + start_pos[1]) % 2
+        self.hunt_targets = deque([pos for pos in ordered_path if (pos[0] + pos[1]) % 2 == parity])
 
     def _is_valid_and_unfired(self, r: int, c: int) -> bool:
         return 0 <= r < self.board_size and 0 <= c < self.board_size and (r, c) not in self.fired_shots
 
     def _update_state(self, hit_history: HitHistory):
         """Updates internal state based on the latest game info."""
-        newly_found_hits = set(hit_history) - self.all_hits
+        newly_found_hits = set(hit_history) - self.active_hits
         if newly_found_hits:
             if self.mode == 'HUNT':
                 self.mode = 'TARGET'
+                self.ships_found_count += 1
 
             for hit in newly_found_hits:
-                # Check if this new hit was the result of a P2M2 shot
-                if self.last_hit_for_midpoint and (hit in self._get_p2m2_pattern(self.last_hit_for_midpoint)):
-                    self.last_shot_was_p2m2_hit = True
-                
-                self.all_hits.add(hit)
-                self.priority_hits.appendleft(hit)
-
-    def _get_p2m2_pattern(self, origin: Tuple[int, int]) -> List[Tuple[int, int]]:
-        r, c = origin
-        return [(r + 2, c), (r - 2, c), (r, c + 2), (r, c - 2)]
-
-    def _get_adjacent_pattern(self, origin: Tuple[int, int]) -> List[Tuple[int, int]]:
-        r, c = origin
-        return [(r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)]
+                self.active_hits.add(hit)
+                # Add adjacent squares to priority queue for traditional targeting fallback
+                r, c = hit
+                self.priority_targets.extend([(r-1, c), (r+1, c), (r, c-1), (r, c+1)])
+        
+        if self.mode == 'TARGET' and not any(self._is_valid_and_unfired(*shot) for shot in self.priority_targets):
+            self.mode = 'HUNT'
+            self.active_hits.clear()
+            self.priority_targets.clear()
 
     def next_shot(self, current_board_state: BoardState, hit_history: HitHistory) -> Tuple[int, int]:
         self._update_state(hit_history)
 
-        if self.mode == 'TARGET' and not self.priority_hits:
-            self.mode = 'HUNT'
-
-        # --- HUNT MODE ---
-        if self.mode == 'HUNT':
-            while self.hunt_targets:
-                shot = self.hunt_targets.pop()
-                if shot not in self.fired_shots:
+        if self.mode == 'TARGET':
+            # Use P2M2 pattern only for the first 4 ships
+            if self.ships_found_count <= 4:
+                origin = list(self.active_hits)[-1] # Use most recent hit as origin
+                r, c = origin
+                p2m2_shots = [(r+2, c), (r-2, c), (r, c+2), (r, c-2)]
+                for shot in p2m2_shots:
+                    if self._is_valid_and_unfired(*shot):
+                        self.fired_shots.add(shot)
+                        return shot
+            
+            # Fallback to traditional adjacent targeting if P2M2 is exhausted or ship count > 4
+            while self.priority_targets:
+                shot = self.priority_targets.popleft()
+                if self._is_valid_and_unfired(*shot):
                     self.fired_shots.add(shot)
-                    self.last_hit_for_midpoint = None
-                    self.last_shot_was_p2m2_hit = False
                     return shot
 
-        # --- TARGET MODE ---
-        if self.mode == 'TARGET':
-            while self.priority_hits:
-                origin = self.priority_hits[0]  # Peek at the current hit
-                
-                # Priority 1: Midpoint Targeting
-                if self.last_shot_was_p2m2_hit:
-                    self.last_shot_was_p2m2_hit = False
-                    last_hit = origin
-                    prev_hit = self.last_hit_for_midpoint
-                    mid_r, mid_c = (last_hit[0] + prev_hit[0]) // 2, (last_hit[1] + prev_hit[1]) // 2
-                    if self._is_valid_and_unfired(mid_r, mid_c):
-                        self.fired_shots.add((mid_r, mid_c))
-                        return (mid_r, mid_c)
-
-                # Priority 2: P2M2 Pattern (Parity Compliant)
-                self.last_hit_for_midpoint = origin
-                for shot in self._get_p2m2_pattern(origin):
-                    if self._is_valid_and_unfired(*shot):
-                        self.fired_shots.add(shot)
-                        return shot
-
-                # Priority 3: Traditional Adjacent Fallback (for touching ships)
-                for shot in self._get_adjacent_pattern(origin):
-                    if self._is_valid_and_unfired(*shot):
-                        self.fired_shots.add(shot)
-                        return shot
-
-                # If all patterns are exhausted for this hit, remove it and process the next
-                self.priority_hits.popleft()
-
-        # Final Fallback: Should rarely be reached, but ensures no crashes
+        # If in HUNT mode or target queue is exhausted
+        while self.hunt_targets:
+            shot = self.hunt_targets.popleft()
+            if not shot in self.fired_shots:
+                self.fired_shots.add(shot)
+                return shot
+        
+        # Ultimate fallback
         while True:
             r, c = random.randint(0, self.board_size - 1), random.randint(0, self.board_size - 1)
             if (r, c) not in self.fired_shots:
