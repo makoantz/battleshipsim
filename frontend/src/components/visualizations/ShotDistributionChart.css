@@ -1,0 +1,8 @@
+/* Styling for the ShotDistributionChart component */
+
+.chart-container {
+  position: relative;
+  height: 400px; /* Give the chart a fixed height */
+  width: 100%;
+  margin-top: 30px;
+}
