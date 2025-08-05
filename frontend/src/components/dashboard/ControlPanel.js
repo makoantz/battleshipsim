@@ -3,17 +3,11 @@ import { getAlgorithms } from '../../api/simulationService';
 import './ControlPanel.css';
 
 function ControlPanel({ onRunSimulation, onRunComparison, isLoading }) {
-  // State for the full list of algorithms fetched from the backend
   const [allAlgorithms, setAllAlgorithms] = useState([]);
-  
-  // State to track which algorithms are selected, using a Set for efficiency
   const [selectedAlgorithms, setSelectedAlgorithms] = useState(new Set());
-  
-  // State for the other form inputs
   const [numSimulations, setNumSimulations] = useState(1000);
   const [placementStrategy, setPlacementStrategy] = useState('random_each_round');
 
-  // Fetch the list of algorithms when the component first mounts
   useEffect(() => {
     const fetchAlgorithms = async () => {
       try {
@@ -24,9 +18,8 @@ function ControlPanel({ onRunSimulation, onRunComparison, isLoading }) {
       }
     };
     fetchAlgorithms();
-  }, []); // Empty dependency array means this runs only once on mount
+  }, []);
 
-  // Handles toggling a checkbox on or off
   const handleAlgorithmToggle = (algoId) => {
     const newSelection = new Set(selectedAlgorithms);
     if (newSelection.has(algoId)) {
@@ -38,21 +31,18 @@ function ControlPanel({ onRunSimulation, onRunComparison, isLoading }) {
   };
 
   const handleSubmit = (event) => {
-    event.preventDefault(); // Prevent default form submission
-    
+    event.preventDefault();
     const selectedList = Array.from(selectedAlgorithms);
     if (selectedList.length === 0) {
       alert("Please select at least one algorithm.");
       return;
     }
     
-    // Common parameters for both single and comparison runs
     const params = {
       num_simulations: Number(numSimulations),
       ship_placement_strategy: placementStrategy,
     };
 
-    // Decide which function to call based on the number of selected algorithms
     if (selectedList.length === 1) {
       onRunSimulation({ ...params, algorithm: selectedList[0] });
     } else {
@@ -68,6 +58,8 @@ function ControlPanel({ onRunSimulation, onRunComparison, isLoading }) {
           <label>Targeting Algorithm(s):</label>
           <div className="checkbox-group">
             {allAlgorithms.map((algo) => (
+              // **MODIFICATION HERE**
+              // The input is now INSIDE the label for better alignment and accessibility.
               <label key={algo.id} className="checkbox-label">
                 <input
                   type="checkbox"

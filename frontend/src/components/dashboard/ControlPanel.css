@@ -8,7 +8,7 @@
   margin-bottom: 20px;
 }
 
-.form-group label {
+.form-group > label { /* Target only the main label of the group */
   display: block;
   font-weight: bold;
   margin-bottom: 8px;
@@ -24,6 +24,26 @@
   box-sizing: border-box; /* Important for padding and width */
   font-size: 1rem;
 }
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Adds space between the checkbox items */
+}
+
+/* **MODIFICATION HERE** */
+.checkbox-label {
+  display: flex;       /* Use flexbox for alignment */
+  align-items: center; /* Vertically center the items */
+  cursor: pointer;
+  font-weight: normal;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: auto;         /* Don't stretch the checkbox */
+  margin-right: 10px;  /* Add space between checkbox and text */
+}
+
 
 .radio-group label {
   font-weight: normal;
