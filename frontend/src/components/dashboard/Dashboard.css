@@ -35,3 +35,43 @@
   border: 1px solid #ebccd1;
   border-radius: 4px;
 }
+
+/* ... (existing styles) ... */
+
+/* Styles for the comparison results view */
+.result-group {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 25px;
+  background-color: #f9f9f9;
+}
+
+.algorithm-name {
+  color: #0056b3;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.anova-results {
+  background-color: #e9f7ef;
+  border: 1px solid #b8e9c9;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 30px;
+}
+
+.anova-results h3 {
+  margin-top: 0;
+}
+
+.anova-results p {
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.anova-values {
+  display: flex;
+  justify-content: space-around;
+  font-size: 1.2rem;
+  margin-top: 15px;
+}

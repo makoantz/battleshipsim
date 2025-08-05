@@ -1,32 +1,55 @@
 import React, { useState } from 'react';
-
-// Import the real components and API service
 import ControlPanel from './ControlPanel';
 import ResultsDisplay from './ResultsDisplay';
-import { runSimulation } from '../../api/simulationService'; // <-- Real API service
+import { runSimulation, runComparison } from '../../api/simulationService';
 import './Dashboard.css';
 
 function Dashboard() {
-  const [simulationResult, setSimulationResult] = useState(null);
+  // State to hold the final results. Can be a single result or a comparison result.
+  const [results, setResults] = useState(null);
+  
+  // State to track the type of result we have ('single' or 'comparison')
+  const [resultType, setResultType] = useState(null);
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // This function is passed to the ControlPanel.
-  // It now makes a real network request.
-  const handleRunSimulation = async (simulationParams) => {
+  const clearState = () => {
     setIsLoading(true);
     setError(null);
-    setSimulationResult(null);
+    setResults(null);
+    setResultType(null);
+  };
 
-    console.log("Calling backend with params:", simulationParams);
+  // Handler for running a single algorithm simulation
+  const handleRunSimulation = async (simulationParams) => {
+    clearState();
+    console.log("Calling backend for SINGLE simulation:", simulationParams);
     try {
-      // ** This is the REAL API CALL **
       const result = await runSimulation(simulationParams);
-      console.log("Received result from backend:", result);
-      setSimulationResult(result);
+      console.log("Received SINGLE result:", result);
+      setResults(result);
+      setResultType('single');
     } catch (err) {
-      console.error("Simulation API call failed:", err);
-      // The error message comes from our simulationService error handling
+      console.error("Single simulation failed:", err);
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handler for running a comparison of multiple algorithms
+  const handleRunComparison = async (comparisonParams) => {
+    clearState();
+    console.log("Calling backend for COMPARISON:", comparisonParams);
+    try {
+      const result = await runComparison(comparisonParams);
+      console.log("Received COMPARISON result:", result);
+      setResults(result);
+      setResultType('comparison');
+    } catch (err)
+    {
+      console.error("Comparison simulation failed:", err);
       setError(err.message);
     } finally {
       setIsLoading(false);
@@ -36,24 +59,25 @@ function Dashboard() {
   return (
     <div className="dashboard">
       <div className="dashboard-panel">
-        {/* Render the real ControlPanel component */}
-        <ControlPanel onRunSimulation={handleRunSimulation} isLoading={isLoading} />
+        <ControlPanel 
+          onRunSimulation={handleRunSimulation} 
+          onRunComparison={handleRunComparison} 
+          isLoading={isLoading} 
+        />
       </div>
 
       <div className="dashboard-panel">
         {isLoading && <div className="loading-spinner">Running simulation on server...</div>}
-
+        
         {error && <div className="error-message">Error: {error}</div>}
         
-        {simulationResult && (
-          // Render the real ResultsDisplay component
-          <ResultsDisplay result={simulationResult} />
+        {results && (
+          <ResultsDisplay resultData={results} resultType={resultType} />
         )}
 
-        {/* This placeholder text will show on initial load */}
-        {!isLoading && !error && !simulationResult && (
+        {!isLoading && !error && !results && (
           <div className="placeholder-text">
-            Click "Run Test Simulation" to get results from the backend.
+            Select one or more algorithms and click "Run" to see the results.
           </div>
         )}
       </div>

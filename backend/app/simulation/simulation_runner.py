@@ -1,3 +1,4 @@
+import copy
 from typing import Dict, List, Any
 
 # Import the components this runner will orchestrate
@@ -11,20 +12,13 @@ SimulationResult = Dict[str, Any]
 
 class SimulationRunner:
     """
-    Orchestrates the execution of a batch of Battleship game simulations.
-
-    This class ties together the game engine, placement strategies, and targeting
-    algorithms to run a specified number of games and collect performance data.
+    Orchestrates the execution of Battleship game simulations.
+    Can run a batch for a single algorithm or a comparative run for multiple.
     """
 
     def __init__(self, simulation_params: Dict[str, Any]):
         """
         Initializes the runner with parameters from the user's request.
-
-        Args:
-            simulation_params (Dict[str, Any]): A dictionary containing all the
-                settings for the simulation run, such as 'algorithm_id',
-                'num_simulations', 'ship_placement_strategy', etc.
         """
         self.params = simulation_params
         self.board_size = self.params.get('board_size', 10)
@@ -32,15 +26,11 @@ class SimulationRunner:
 
     def run(self) -> SimulationResult:
         """
-        Executes the entire simulation run from start to finish.
-
-        Returns:
-            A dictionary containing the raw results of the simulation.
+        Executes a simulation run for a SINGLE algorithm.
         """
         shots_per_game = []
         heat_map_grid = [[0 for _ in range(self.board_size)] for _ in range(self.board_size)]
 
-        # Get a single instance of the algorithm. We will call its reset() method for each game.
         algorithm = get_algorithm_instance(
             algo_id=self.params['algorithm'],
             board_size=self.board_size,
@@ -48,7 +38,6 @@ class SimulationRunner:
         )
 
         for _ in range(self.params['num_simulations']):
-            # 1. Get a game instance based on the chosen placement strategy
             game = PlacementStrategy.get_game_instance(
                 strategy_id=self.params['ship_placement_strategy'],
                 board_size=self.board_size,
@@ -56,14 +45,8 @@ class SimulationRunner:
                 fixed_placement_grid=self.params.get('fixed_placements'),
                 placement_set_grids=self.params.get('placement_set')
             )
-
-            # 2. Reset the algorithm's state for the new game
             algorithm.reset()
-
-            # 3. Play the game until it's over
             shot_count, game_shots = self._play_single_game(game, algorithm)
-            
-            # 4. Record the results from the completed game
             shots_per_game.append(shot_count)
             for r, c in game_shots:
                 heat_map_grid[r][c] += 1
@@ -73,38 +56,67 @@ class SimulationRunner:
             "heat_map": heat_map_grid,
         }
 
+    def run_comparison(self) -> Dict[str, SimulationResult]:
+        """
+        Runs a simulation comparing MULTIPLE algorithms side-by-side.
+        Ensures each algorithm plays on an identical copy of the board per round.
+        """
+        # Initialize result containers for each algorithm
+        results = {
+            algo_id: {"shots_per_game": [], "heat_map": [[0] * self.board_size for _ in range(self.board_size)]}
+            for algo_id in self.params['algorithms']
+        }
+        
+        # Instantiate all selected algorithms
+        algorithms = {
+            algo_id: get_algorithm_instance(algo_id, self.board_size, self.ship_config)
+            for algo_id in self.params['algorithms']
+        }
+
+        # Main simulation loop
+        for _ in range(self.params['num_simulations']):
+            # 1. Generate ONE game board to serve as the template for this round
+            game_template = PlacementStrategy.get_game_instance(
+                strategy_id=self.params['ship_placement_strategy'],
+                board_size=self.board_size,
+                ship_config=self.ship_config,
+                fixed_placement_grid=self.params.get('fixed_placements'),
+                placement_set_grids=self.params.get('placement_set')
+            )
+            
+            # 2. Loop through each algorithm and have it play on a DEEP COPY of the board
+            for algo_id, algorithm in algorithms.items():
+                # deepcopy is essential to prevent one algorithm's moves from affecting another's
+                game_instance = copy.deepcopy(game_template)
+                algorithm.reset()
+                
+                shot_count, game_shots = self._play_single_game(game_instance, algorithm)
+                
+                # Store results for this specific algorithm
+                results[algo_id]["shots_per_game"].append(shot_count)
+                for r, c in game_shots:
+                    results[algo_id]["heat_map"][r][c] += 1
+        
+        return results
+
     def _play_single_game(self, game: BattleshipGame, algorithm: Any) -> tuple[int, list]:
         """
-        Manages the gameplay loop for one individual game.
-
-        Args:
-            game (BattleshipGame): An initialized game instance.
-            algorithm (TargetingAlgorithm): An initialized algorithm instance.
-
-        Returns:
-            A tuple containing:
-            - The total number of shots fired in the game.
-            - A list of the coordinates that were fired at.
+        Manages the gameplay loop for one individual game. (This method is unchanged).
         """
         shots_fired_coords = []
         hit_history = []
         player_view = [['UNKNOWN' for _ in range(self.board_size)] for _ in range(self.board_size)]
 
         while not game.is_game_over:
-            # Get the next shot from the algorithm
             r, c = algorithm.next_shot(player_view, hit_history)
 
-            # Ensure the algorithm isn't making a mistake (optional but good practice)
             if player_view[r][c] != 'UNKNOWN':
-                # This indicates a flawed algorithm. We stop to prevent infinite loops.
                 print(f"Warning: Algorithm '{algorithm.name}' targeted an already known square ({r},{c}).")
-                # For robustness, we could try to get another shot, but for now we stop.
                 break
 
             shots_fired_coords.append((r, c))
             result = game.take_shot(r, c)
             
-            # Update the player's view of the board
             player_view[r][c] = result
             if result == 'HIT':
                 hit_history.append((r, c))
