@@ -65,7 +65,7 @@ class HuntAndTarget(TargetingAlgorithm):
                 r, c = hit
                 # Add adjacent squares to priority targets
                 potential_targets = [(r-1, c), (r+1, c), (r, c-1), (r, c+1)]
-                for pr, pc in potential_tickets:
+                for pr, pc in potential_targets: # <-- THIS LINE IS NOW FIXED
                     if self._is_valid_and_unknown(pr, pc, board_state):
                         if (pr, pc) not in self.priority_targets:
                             self.priority_targets.append((pr, pc))

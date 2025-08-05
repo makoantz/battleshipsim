@@ -1,0 +1,42 @@
+/* Styling for the StatsTable component */
+
+.stats-table-container {
+  margin-bottom: 20px;
+}
+
+.stats-table-container h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #333;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 5px;
+}
+
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.stats-table td {
+  padding: 12px 8px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.stats-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Style the first column (labels) */
+.stats-table td:first-child {
+  font-weight: bold;
+  color: #555;
+}
+
+/* Style the second column (values) */
+.stats-table td:last-child {
+  text-align: right;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
