@@ -41,7 +41,13 @@ class P2M2Optimized(TargetingAlgorithm):
         self.fired_shots.clear()
         self.target_groups.clear()
         self.ships_found_count = 0
-        self.remaining_ships = Counter(len(ship['shape']) for ship in self.ship_config)
+        
+        # Handle empty ship config gracefully (for registry discovery)
+        if self.ship_config and len(self.ship_config) > 0:
+            self.remaining_ships = Counter(len(ship['shape']) for ship in self.ship_config)
+        else:
+            # Default ship sizes for standard Battleship game
+            self.remaining_ships = Counter({2: 1, 3: 2, 4: 1, 5: 1})
         
         # Use random checkerboard instead of diagonal
         self.hunt_targets = deque(self._generate_random_checkerboard())
@@ -60,39 +66,40 @@ class P2M2Optimized(TargetingAlgorithm):
     def _is_space_large_enough_for_any_ship(self, r: int, c: int) -> bool:
         """Check if ANY remaining ship can fit at this coordinate."""
         if sum(self.remaining_ships.values()) == 0:
-            return False
+            return True  # If no ships info, assume it's fine
             
-        # Check if this position can accommodate ANY remaining ship
-        for ship_size in self.remaining_ships.elements():
-            # Check horizontal space
-            h_space = 1
-            for i in range(1, ship_size):
-                if self._is_valid_and_unfired(r, c - i): 
-                    h_space += 1
-                else: 
-                    break
-            for i in range(1, ship_size):
-                if self._is_valid_and_unfired(r, c + i): 
-                    h_space += 1
-                else: 
-                    break
-            if h_space >= ship_size: 
-                return True
+        # Get the smallest remaining ship size for efficiency
+        min_ship_size = min(self.remaining_ships.keys()) if self.remaining_ships else 2
+        
+        # Quick check: can we fit the smallest ship horizontally?
+        h_space = 1
+        for i in range(1, min_ship_size):
+            if self._is_valid_and_unfired(r, c - i): 
+                h_space += 1
+            else: 
+                break
+        for i in range(1, min_ship_size):
+            if self._is_valid_and_unfired(r, c + i): 
+                h_space += 1
+            else: 
+                break
+        if h_space >= min_ship_size: 
+            return True
 
-            # Check vertical space
-            v_space = 1
-            for i in range(1, ship_size):
-                if self._is_valid_and_unfired(r - i, c): 
-                    v_space += 1
-                else: 
-                    break
-            for i in range(1, ship_size):
-                if self._is_valid_and_unfired(r + i, c): 
-                    v_space += 1
-                else: 
-                    break
-            if v_space >= ship_size: 
-                return True
+        # Quick check: can we fit the smallest ship vertically?
+        v_space = 1
+        for i in range(1, min_ship_size):
+            if self._is_valid_and_unfired(r - i, c): 
+                v_space += 1
+            else: 
+                break
+        for i in range(1, min_ship_size):
+            if self._is_valid_and_unfired(r + i, c): 
+                v_space += 1
+            else: 
+                break
+        if v_space >= min_ship_size: 
+            return True
 
         return False
 
@@ -230,11 +237,19 @@ class P2M2Optimized(TargetingAlgorithm):
                     if self._is_valid_and_unfired(r, c):
                         return self._get_shot(r, c)
         
-        # HUNTING PHASE: Random checkerboard with space checking
+        # HUNTING PHASE: Random checkerboard with conditional space checking
+        shots_fired = len(self.fired_shots)
+        total_squares = self.board_size * self.board_size
+        game_progress = shots_fired / total_squares
+        
+        # Early game: skip space checking for speed, late game: be more careful
+        use_space_check = game_progress > 0.6  # Only check space after 60% of game
+        
         while self.hunt_targets:
             r, c = self.hunt_targets.popleft()
-            if self._is_valid_and_unfired(r, c) and self._is_space_large_enough_for_any_ship(r, c):
-                return self._get_shot(r, c)
+            if self._is_valid_and_unfired(r, c):
+                if not use_space_check or self._is_space_large_enough_for_any_ship(r, c):
+                    return self._get_shot(r, c)
 
         # FALLBACK: Any remaining valid square
         all_squares = [(r, c) for r in range(self.board_size) for c in range(self.board_size)]
