@@ -1,0 +1,315 @@
+Discovered and registered JSON algorithm: id='hunt_target', name='Hunt and Target (JSON)'
+Discovered and registered JSON algorithm: id='smart_target', name='Smart Target (JSON)'
+Discovered and registered JSON algorithm: id='p2m2_json', name='P2M2 (JSON)'
+Discovered and registered JSON algorithm: id='p2m2_optimized', name='P2M2 Optimized (JSON)'
+Discovered and registered JSON algorithm: id='random_search', name='Random Search (JSON)'
+Discovered and registered JSON algorithm: id='p2m2st', name='P2M2-ST (JSON)'
+Discovered and registered Python algorithm: id='huntandtarget', name='Hunt and Target'
+Discovered and registered Python algorithm: id='p2m2', name='P2M2 (Diagonal Hunt)'
+Discovered and registered Python algorithm: id='p2m2optimized', name='P2M2 Optimized'
+Discovered and registered Python algorithm: id='p2m2stdirectional', name='P2M2-ST (Directional)'
+Discovered and registered Python algorithm: id='randomsearch', name='Random Search'
+Discovered and registered Python algorithm: id='smarttarget', name='Smart Target'
+--- Running simulation for: smart_target ---
+[GenericAlgorithm] Executing on_entry actions for state HUNT with hit context: None
+[GenericAlgorithm] Executing on_entry actions for state HUNT with hit context: None
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: None
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (1, 2)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (2, 7)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (0, 1)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (5, 0)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (9, 2)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (6, 7)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (8, 9)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (8, 3)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: None
+[GenericAlgorithm] Detected new hits: {(8, 3)}. Result forced to HIT.
+[GenericAlgorithm] Condition met: on_hit. Transitioning to TARGET
+[GenericAlgorithm] Executing on_entry actions for state TARGET with hit context: (8, 3)
+[GenericAlgorithm] Getting next shot in state: TARGET
+[GenericAlgorithm] Chosen shot: (7, 3)
+[GenericAlgorithm] --- Turn Start (State: TARGET) ---
+[GenericAlgorithm] Last shot result: None
+[GenericAlgorithm] Detected new hits: {(7, 3)}. Result forced to HIT.
+[GenericAlgorithm] Getting next shot in state: TARGET
+[GenericAlgorithm] Chosen shot: (9, 3)
+[GenericAlgorithm] --- Turn Start (State: TARGET) ---
+[GenericAlgorithm] Last shot result: None
+[GenericAlgorithm] Detected new hits: {(9, 3)}. Result forced to HIT.
+[GenericAlgorithm] Getting next shot in state: TARGET
+[GenericAlgorithm] Chosen shot: (8, 2)
+[GenericAlgorithm] --- Turn Start (State: TARGET) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: TARGET
+[GenericAlgorithm] Chosen shot: (8, 4)
+[GenericAlgorithm] --- Turn Start (State: TARGET) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Condition met: {'queue_empty': 'priority_targets'}. Transitioning to HUNT
+[GenericAlgorithm] Executing on_entry actions for state HUNT with hit context: None
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (9, 0)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (2, 5)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (3, 8)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (0, 3)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (9, 4)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (4, 3)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (9, 6)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (5, 8)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (0, 7)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (4, 9)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (1, 6)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (6, 1)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: None
+[GenericAlgorithm] Detected new hits: {(6, 1)}. Result forced to HIT.
+[GenericAlgorithm] Condition met: on_hit. Transitioning to TARGET
+[GenericAlgorithm] Executing on_entry actions for state TARGET with hit context: (6, 1)
+[GenericAlgorithm] Getting next shot in state: TARGET
+[GenericAlgorithm] Chosen shot: (5, 1)
+[GenericAlgorithm] --- Turn Start (State: TARGET) ---
+[GenericAlgorithm] Last shot result: None
+[GenericAlgorithm] Detected new hits: {(5, 1)}. Result forced to HIT.
+[GenericAlgorithm] Getting next shot in state: TARGET
+[GenericAlgorithm] Chosen shot: (7, 1)
+[GenericAlgorithm] --- Turn Start (State: TARGET) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: TARGET
+[GenericAlgorithm] Chosen shot: (6, 0)
+[GenericAlgorithm] --- Turn Start (State: TARGET) ---
+[GenericAlgorithm] Last shot result: None
+[GenericAlgorithm] Detected new hits: {(6, 0)}. Result forced to HIT.
+[GenericAlgorithm] Getting next shot in state: TARGET
+[GenericAlgorithm] Chosen shot: (6, 2)
+[GenericAlgorithm] --- Turn Start (State: TARGET) ---
+[GenericAlgorithm] Last shot result: None
+[GenericAlgorithm] Detected new hits: {(6, 2)}. Result forced to HIT.
+[GenericAlgorithm] Condition met: {'queue_empty': 'priority_targets'}. Transitioning to HUNT
+[GenericAlgorithm] Executing on_entry actions for state HUNT with hit context: (6, 2)
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (7, 8)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (4, 5)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (0, 9)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (4, 7)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (1, 4)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (6, 5)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (4, 1)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (1, 8)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (2, 1)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (8, 7)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (1, 0)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (7, 6)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: None
+[GenericAlgorithm] Detected new hits: {(7, 6)}. Result forced to HIT.
+[GenericAlgorithm] Condition met: on_hit. Transitioning to TARGET
+[GenericAlgorithm] Executing on_entry actions for state TARGET with hit context: (7, 6)
+[GenericAlgorithm] Getting next shot in state: TARGET
+[GenericAlgorithm] Chosen shot: (6, 6)
+[GenericAlgorithm] --- Turn Start (State: TARGET) ---
+[GenericAlgorithm] Last shot result: None
+[GenericAlgorithm] Detected new hits: {(6, 6)}. Result forced to HIT.
+[GenericAlgorithm] Getting next shot in state: TARGET
+[GenericAlgorithm] Chosen shot: (8, 6)
+[GenericAlgorithm] --- Turn Start (State: TARGET) ---
+[GenericAlgorithm] Last shot result: None
+[GenericAlgorithm] Detected new hits: {(8, 6)}. Result forced to HIT.
+[GenericAlgorithm] Getting next shot in state: TARGET
+[GenericAlgorithm] Chosen shot: (7, 5)
+[GenericAlgorithm] --- Turn Start (State: TARGET) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: TARGET
+[GenericAlgorithm] Chosen shot: (7, 7)
+[GenericAlgorithm] --- Turn Start (State: TARGET) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Condition met: {'queue_empty': 'priority_targets'}. Transitioning to HUNT
+[GenericAlgorithm] Executing on_entry actions for state HUNT with hit context: None
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (7, 0)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (2, 9)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (5, 2)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: None
+[GenericAlgorithm] Detected new hits: {(5, 2)}. Result forced to HIT.
+[GenericAlgorithm] Condition met: on_hit. Transitioning to TARGET
+[GenericAlgorithm] Executing on_entry actions for state TARGET with hit context: (5, 2)
+[GenericAlgorithm] Getting next shot in state: TARGET
+[GenericAlgorithm] Chosen shot: (4, 2)
+[GenericAlgorithm] --- Turn Start (State: TARGET) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: TARGET
+[GenericAlgorithm] Chosen shot: (5, 3)
+[GenericAlgorithm] --- Turn Start (State: TARGET) ---
+[GenericAlgorithm] Last shot result: None
+[GenericAlgorithm] Detected new hits: {(5, 3)}. Result forced to HIT.
+[GenericAlgorithm] Condition met: {'queue_empty': 'priority_targets'}. Transitioning to HUNT
+[GenericAlgorithm] Executing on_entry actions for state HUNT with hit context: (5, 3)
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (3, 6)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (3, 4)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (9, 8)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (2, 3)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (8, 5)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (5, 6)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: None
+[GenericAlgorithm] Detected new hits: {(5, 6)}. Result forced to HIT.
+[GenericAlgorithm] Condition met: on_hit. Transitioning to TARGET
+[GenericAlgorithm] Executing on_entry actions for state TARGET with hit context: (5, 6)
+[GenericAlgorithm] Getting next shot in state: TARGET
+[GenericAlgorithm] Chosen shot: (4, 6)
+[GenericAlgorithm] --- Turn Start (State: TARGET) ---
+[GenericAlgorithm] Last shot result: None
+[GenericAlgorithm] Detected new hits: {(4, 6)}. Result forced to HIT.
+[GenericAlgorithm] Getting next shot in state: TARGET
+[GenericAlgorithm] Chosen shot: (5, 5)
+[GenericAlgorithm] --- Turn Start (State: TARGET) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: TARGET
+[GenericAlgorithm] Chosen shot: (5, 7)
+[GenericAlgorithm] --- Turn Start (State: TARGET) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Condition met: {'queue_empty': 'priority_targets'}. Transitioning to HUNT
+[GenericAlgorithm] Executing on_entry actions for state HUNT with hit context: None
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (7, 4)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (6, 3)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: None
+[GenericAlgorithm] Detected new hits: {(6, 3)}. Result forced to HIT.
+[GenericAlgorithm] Condition met: on_hit. Transitioning to TARGET
+[GenericAlgorithm] Executing on_entry actions for state TARGET with hit context: (6, 3)
+[GenericAlgorithm] Getting next shot in state: TARGET
+[GenericAlgorithm] Chosen shot: (6, 4)
+[GenericAlgorithm] --- Turn Start (State: TARGET) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Condition met: {'queue_empty': 'priority_targets'}. Transitioning to HUNT
+[GenericAlgorithm] Executing on_entry actions for state HUNT with hit context: None
+[GenericAlgorithm] Getting next shot in state: HUNT
+[GenericAlgorithm] Chosen shot: (0, 5)
+[GenericAlgorithm] --- Turn Start (State: HUNT) ---
+[GenericAlgorithm] Last shot result: None
+[GenericAlgorithm] Detected new hits: {(0, 5)}. Result forced to HIT.
+[GenericAlgorithm] Condition met: on_hit. Transitioning to TARGET
+[GenericAlgorithm] Executing on_entry actions for state TARGET with hit context: (0, 5)
+[GenericAlgorithm] Getting next shot in state: TARGET
+[GenericAlgorithm] Chosen shot: (1, 5)
+[GenericAlgorithm] --- Turn Start (State: TARGET) ---
+[GenericAlgorithm] Last shot result: MISS
+[GenericAlgorithm] Getting next shot in state: TARGET
+[GenericAlgorithm] Chosen shot: (0, 4)
+--- Simulation finished for: smart_target ---
+Shots taken: 64
