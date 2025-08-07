@@ -87,3 +87,15 @@ def test_p2m2_json_state_transition():
     assert algo.current_state == "TARGET"
     # And the ships_found_count should be incremented
     assert algo.variables['ships_found_count'] == 1
+
+def test_discover_new_json_algorithms():
+    """
+    Tests if the new JSON algorithms are discovered and available.
+    """
+    available_algos = get_available_algorithms()
+    algo_names = [algo['name'] for algo in available_algos]
+
+    assert "Hunt and Target (JSON)" in algo_names
+    assert "P2M2 Optimized (JSON)" in algo_names
+    assert "P2M2-ST (JSON)" in algo_names
+    assert "Smart Target (JSON)" in algo_names

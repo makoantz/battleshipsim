@@ -1,0 +1,70 @@
+{
+  "name": "P2M2-ST (JSON)",
+  "description": "A simplified JSON implementation of the P2M2-ST algorithm with a diagonal hunt.",
+  "initial_state": "HUNT",
+  "variables": {
+    "ships_found_count": 0
+  },
+  "queues": [
+    "hunt_targets",
+    "priority_targets"
+  ],
+  "states": {
+    "HUNT": {
+      "on_entry": [
+        {
+          "action": "generate_diagonal_hunt",
+          "queue": "hunt_targets"
+        }
+      ],
+      "next_shot": [
+        {
+          "action": "pop_from_queue",
+          "queue": "hunt_targets"
+        }
+      ],
+      "transitions": [
+        {
+          "condition": "on_hit",
+          "next_state": "TARGET"
+        }
+      ]
+    },
+    "TARGET": {
+      "on_entry": [
+        {
+          "action": "increment_variable",
+          "variable": "ships_found_count"
+        }
+      ],
+      "next_shot": [
+        {
+          "condition": {
+            "variable_less_equal": {
+              "name": "ships_found_count",
+              "value": 4
+            }
+          },
+          "action": "add_p2m2_to_queue",
+          "queue": "priority_targets"
+        },
+        {
+          "action": "add_adjacent_to_queue",
+          "queue": "priority_targets"
+        },
+        {
+          "action": "pop_from_queue",
+          "queue": "priority_targets"
+        }
+      ],
+      "transitions": [
+        {
+          "condition": {
+            "queue_empty": "priority_targets"
+          },
+          "next_state": "HUNT"
+        }
+      ]
+    }
+  }
+}

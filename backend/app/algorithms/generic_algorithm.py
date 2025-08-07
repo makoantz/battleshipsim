@@ -123,6 +123,10 @@ class GenericAlgorithm(TargetingAlgorithm):
             filtered_path = [pos for pos in path if (pos[0] + pos[1]) % 2 == parity]
             self.queues[action_config["queue"]].extend(filtered_path)
 
+        elif action == "generate_checkerboard_hunt":
+            pattern = self._generate_checkerboard_pattern()
+            self.queues[action_config["queue"]].extend(pattern)
+
         elif action == "increment_variable":
             self.variables[action_config["variable"]] += 1
 
@@ -174,3 +178,12 @@ class GenericAlgorithm(TargetingAlgorithm):
             if k % 2 == 1: path.reverse()
             paths.extend(path)
         return paths
+
+    def _generate_checkerboard_pattern(self) -> List[Tuple[int, int]]:
+        """Generates a randomized checkerboard pattern."""
+        parity = random.choice([0, 1])
+        primary_squares = [(r, c) for r in range(self.board_size) for c in range(self.board_size) if (r + c) % 2 == parity]
+        secondary_squares = [(r, c) for r in range(self.board_size) for c in range(self.board_size) if (r + c) % 2 != parity]
+        random.shuffle(primary_squares)
+        random.shuffle(secondary_squares)
+        return primary_squares + secondary_squares
