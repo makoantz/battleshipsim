@@ -61,28 +61,188 @@ function Dashboard() {
     }
   };
 
-  // Helper function to get algorithm descriptions
-  const getAlgorithmDescription = (algorithmId) => {
-    const descriptions = {
-      'huntandtarget': 'Classic hunt & target with adjacent firing after hits',
-      'hunt_target': 'JSON-defined hunt & target implementation',
-      'p2m2': 'Probability-based diagonal hunting with 2-space targeting',
-      'p2m2_json': 'JSON-defined P2M2 implementation',
-      'p2m2optimized': 'Advanced hybrid with gap-filling and space awareness',
-      'p2m2_optimized': 'JSON-defined optimized P2M2 implementation',
-      'p2m2stdirectional': 'P2M2 with directional smart targeting',
-      'p2m2st': 'JSON-defined P2M2-ST implementation',
-      'randomsearch': 'Pure random targeting strategy',
-      'random_search': 'JSON-defined random search implementation',
-      'smarttarget': 'Intelligent targeting with probability calculations',
-      'smart_target': 'JSON-defined smart targeting implementation'
-    };
-    return descriptions[algorithmId] || 'Advanced battleship targeting algorithm';
+  // Extract performance summary from results
+  const getPerformanceSummary = () => {
+    if (!results) return [];
+
+    if (resultType === 'single') {
+      // Single algorithm result
+      return [{
+        algorithm: results.algorithm_name || results.algorithm,
+        meanShots: results.mean_shots?.toFixed(2),
+        medianShots: results.median_shots,
+        stdDev: results.std_dev?.toFixed(2),
+        minShots: results.min_shots,
+        maxShots: results.max_shots,
+        totalSimulations: results.total_simulations
+      }];
+    } else if (resultType === 'comparison' && results.algorithms) {
+      // Multiple algorithm comparison
+      return results.algorithms.map(algo => ({
+        algorithm: algo.name,
+        meanShots: algo.mean_shots?.toFixed(2),
+        medianShots: algo.median_shots,
+        stdDev: algo.std_dev?.toFixed(2),
+        minShots: algo.min_shots,
+        maxShots: algo.max_shots,
+        totalSimulations: algo.total_simulations
+      }));
+    }
+
+    return [];
   };
+
+  const performanceSummary = getPerformanceSummary();
 
   return (
     <div className="dashboard">
-      {/* Algorithm Summary Table */}
+      {/* Performance Summary Table */}
+      {results && performanceSummary.length > 0 && (
+        <div className="performance-summary" style={{
+          backgroundColor: '#e8f5e8',
+          border: '2px solid #28a745',
+          borderRadius: '10px',
+          padding: '20px',
+          marginBottom: '25px',
+          boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+        }}>
+          <h3 style={{
+            color: '#155724',
+            marginBottom: '20px',
+            fontSize: '1.4em',
+            textAlign: 'center',
+            fontWeight: 'bold'
+          }}>
+            🎯 Performance Summary - All Algorithms
+          </h3>
+          <div className="performance-table-container" style={{ overflowX: 'auto' }}>
+            <table style={{
+              width: '100%',
+              borderCollapse: 'collapse',
+              backgroundColor: 'white',
+              borderRadius: '8px',
+              overflow: 'hidden',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+              border: '1px solid #dee2e6'
+            }}>
+              <thead>
+                <tr style={{ backgroundColor: '#28a745', color: 'white' }}>
+                  <th style={{
+                    padding: '15px 12px',
+                    textAlign: 'left',
+                    fontWeight: '600',
+                    fontSize: '0.9em'
+                  }}>Algorithm</th>
+                  <th style={{
+                    padding: '15px 12px',
+                    textAlign: 'center',
+                    fontWeight: '600',
+                    fontSize: '0.9em'
+                  }}>Mean Shots</th>
+                  <th style={{
+                    padding: '15px 12px',
+                    textAlign: 'center',
+                    fontWeight: '600',
+                    fontSize: '0.9em'
+                  }}>Median</th>
+                  <th style={{
+                    padding: '15px 12px',
+                    textAlign: 'center',
+                    fontWeight: '600',
+                    fontSize: '0.9em'
+                  }}>Std Dev</th>
+                  <th style={{
+                    padding: '15px 12px',
+                    textAlign: 'center',
+                    fontWeight: '600',
+                    fontSize: '0.9em'
+                  }}>Min/Max</th>
+                  <th style={{
+                    padding: '15px 12px',
+                    textAlign: 'center',
+                    fontWeight: '600',
+                    fontSize: '0.9em'
+                  }}>Simulations</th>
+                </tr>
+              </thead>
+              <tbody>
+                {performanceSummary.map((algo, index) => {
+                  const isP2M2Optimized = algo.algorithm.toLowerCase().includes('p2m2 optimized');
+                  return (
+                    <tr key={index} style={{
+                      backgroundColor: index % 2 === 0 ? '#f8f9fa' : 'white',
+                      borderLeft: isP2M2Optimized ? '4px solid #ffc107' : 'none'
+                    }}>
+                      <td style={{
+                        padding: '12px',
+                        borderBottom: '1px solid #dee2e6',
+                        fontWeight: isP2M2Optimized ? '700' : '500',
+                        color: isP2M2Optimized ? '#856404' : '#212529',
+                        backgroundColor: isP2M2Optimized ? '#fff3cd' : 'inherit'
+                      }}>
+                        {isP2M2Optimized && '⭐ '}{algo.algorithm}
+                      </td>
+                      <td style={{
+                        padding: '12px',
+                        borderBottom: '1px solid #dee2e6',
+                        textAlign: 'center',
+                        fontWeight: '600',
+                        color: '#495057'
+                      }}>
+                        {algo.meanShots}
+                      </td>
+                      <td style={{
+                        padding: '12px',
+                        borderBottom: '1px solid #dee2e6',
+                        textAlign: 'center',
+                        color: '#495057'
+                      }}>
+                        {algo.medianShots}
+                      </td>
+                      <td style={{
+                        padding: '12px',
+                        borderBottom: '1px solid #dee2e6',
+                        textAlign: 'center',
+                        color: '#495057'
+                      }}>
+                        {algo.stdDev}
+                      </td>
+                      <td style={{
+                        padding: '12px',
+                        borderBottom: '1px solid #dee2e6',
+                        textAlign: 'center',
+                        color: '#495057',
+                        fontSize: '0.9em'
+                      }}>
+                        {algo.minShots} / {algo.maxShots}
+                      </td>
+                      <td style={{
+                        padding: '12px',
+                        borderBottom: '1px solid #dee2e6',
+                        textAlign: 'center',
+                        color: '#6c757d',
+                        fontSize: '0.9em'
+                      }}>
+                        {algo.totalSimulations?.toLocaleString()}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          <div style={{
+            marginTop: '15px',
+            fontSize: '0.85em',
+            color: '#6c757d',
+            textAlign: 'center'
+          }}>
+            ⭐ = Your optimized algorithm | Lower mean shots = Better performance
+          </div>
+        </div>
+      )}
+
+      {/* Algorithm Selection Summary */}
       {selectedAlgorithms.length > 0 && (
         <div className="algorithm-summary" style={{
           backgroundColor: '#f8f9fa',
@@ -97,81 +257,26 @@ function Dashboard() {
             marginBottom: '15px',
             fontSize: '1.2em'
           }}>
-            📊 Selected Algorithms Summary ({selectedAlgorithms.length})
+            📊 Selected Algorithms ({selectedAlgorithms.length})
           </h3>
-          <div className="summary-table-container" style={{ overflowX: 'auto' }}>
-            <table style={{
-              width: '100%',
-              borderCollapse: 'collapse',
-              backgroundColor: 'white',
-              borderRadius: '6px',
-              overflow: 'hidden',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-            }}>
-              <thead>
-                <tr style={{ backgroundColor: '#e9ecef' }}>
-                  <th style={{
-                    padding: '12px 15px',
-                    textAlign: 'left',
-                    borderBottom: '2px solid #dee2e6',
-                    fontWeight: '600',
-                    color: '#495057'
-                  }}>Algorithm</th>
-                  <th style={{
-                    padding: '12px 15px',
-                    textAlign: 'center',
-                    borderBottom: '2px solid #dee2e6',
-                    fontWeight: '600',
-                    color: '#495057'
-                  }}>Type</th>
-                  <th style={{
-                    padding: '12px 15px',
-                    textAlign: 'left',
-                    borderBottom: '2px solid #dee2e6',
-                    fontWeight: '600',
-                    color: '#495057'
-                  }}>Description</th>
-                </tr>
-              </thead>
-              <tbody>
-                {selectedAlgorithms.map((algo, index) => (
-                  <tr key={algo.value} style={{
-                    backgroundColor: index % 2 === 0 ? '#f8f9fa' : 'white'
-                  }}>
-                    <td style={{
-                      padding: '12px 15px',
-                      borderBottom: '1px solid #dee2e6',
-                      fontWeight: '500',
-                      color: '#212529'
-                    }}>{algo.label}</td>
-                    <td style={{
-                      padding: '12px 15px',
-                      borderBottom: '1px solid #dee2e6',
-                      textAlign: 'center'
-                    }}>
-                      <span style={{
-                        padding: '4px 8px',
-                        borderRadius: '12px',
-                        fontSize: '0.8em',
-                        fontWeight: '500',
-                        backgroundColor: algo.value.includes('json') || algo.value.includes('_') ? '#d4edda' : '#cce5ff',
-                        color: algo.value.includes('json') || algo.value.includes('_') ? '#155724' : '#0056b3'
-                      }}>
-                        {algo.value.includes('json') || algo.value.includes('_') ? 'JSON' : 'Python'}
-                      </span>
-                    </td>
-                    <td style={{
-                      padding: '12px 15px',
-                      borderBottom: '1px solid #dee2e6',
-                      color: '#6c757d',
-                      fontSize: '0.9em'
-                    }}>
-                      {getAlgorithmDescription(algo.value)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="selected-algorithms" style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '10px'
+          }}>
+            {selectedAlgorithms.map((algo, index) => (
+              <span key={index} style={{
+                padding: '8px 12px',
+                backgroundColor: '#e3f2fd',
+                color: '#1565c0',
+                borderRadius: '20px',
+                fontSize: '0.9em',
+                fontWeight: '500',
+                border: '1px solid #bbdefb'
+              }}>
+                {algo.label}
+              </span>
+            ))}
           </div>
         </div>
       )}
