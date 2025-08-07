@@ -29,6 +29,56 @@ export const getAlgorithms = async () => {
 };
 
 /**
+ * Renames a JSON-defined algorithm.
+ *
+ * @param {string} oldAlgoId - The current ID of the algorithm.
+ * @param {string} newAlgoId - The new ID for the algorithm.
+ * @returns {Promise<Object>} A promise that resolves to the backend response.
+ */
+export const renameJsonAlgorithm = async (oldAlgoId, newAlgoId) => {
+  try {
+    const response = await apiClient.post(`/algorithms/json/${oldAlgoId}/rename`, { new_id: newAlgoId });
+    return response.data;
+  } catch (error) {
+    console.error(`Error renaming algorithm ${oldAlgoId}:`, error);
+    throw new Error(error.response?.data?.error || `Could not rename algorithm.`);
+  }
+};
+
+/**
+ * Saves (creates or updates) a JSON-defined algorithm.
+ *
+ * @param {string} algoId - The ID of the JSON algorithm.
+ * @param {Object} content - The JSON content of the algorithm.
+ * @returns {Promise<Object>} A promise that resolves to the backend response.
+ */
+export const saveJsonAlgorithm = async (algoId, content) => {
+  try {
+    const response = await apiClient.post(`/algorithms/json/${algoId}`, content);
+    return response.data;
+  } catch (error) {
+    console.error(`Error saving JSON for algorithm ${algoId}:`, error);
+    throw new Error(`Could not save content for ${algoId}.`);
+  }
+};
+
+/**
+ * Fetches the content of a specific JSON-defined algorithm.
+ *
+ * @param {string} algoId - The ID of the JSON algorithm.
+ * @returns {Promise<Object>} A promise that resolves to the JSON content of the algorithm.
+ */
+export const getJsonAlgorithm = async (algoId) => {
+  try {
+    const response = await apiClient.get(`/algorithms/json/${algoId}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching JSON for algorithm ${algoId}:`, error);
+    throw new Error(`Could not fetch content for ${algoId}.`);
+  }
+};
+
+/**
  * Runs a new simulation for a SINGLE algorithm.
  *
  * @param {Object} simulationParams - The configuration object for the simulation.
