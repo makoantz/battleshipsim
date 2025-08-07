@@ -51,8 +51,6 @@ function Dashboard() {
     try {
       const result = await runComparison(comparisonParams);
       console.log("Received COMPARISON result:", result);
-      console.log("DEBUG - result.individual_results:", result.individual_results);
-      console.log("DEBUG - result.individual_results type:", typeof result.individual_results);
       setResults(result);
       setResultType('comparison');
     } catch (err) {
@@ -67,10 +65,6 @@ function Dashboard() {
   const getPerformanceSummary = () => {
     if (!results) return [];
 
-    console.log("DEBUG - getPerformanceSummary called");
-    console.log("DEBUG - resultType:", resultType);
-    console.log("DEBUG - results:", results);
-
     if (resultType === 'single') {
       // Single algorithm result
       return [{
@@ -82,28 +76,16 @@ function Dashboard() {
         maxShots: results.max_shots,
         totalSimulations: results.total_simulations
       }];
-    } else if (resultType === 'comparison') {
-      // Use individual_results for comparison data
-      const algorithmData = results.individual_results || [];
-      
-      console.log("DEBUG - algorithmData:", algorithmData);
-      console.log("DEBUG - algorithmData type:", typeof algorithmData);
-      console.log("DEBUG - is algorithmData an array?", Array.isArray(algorithmData));
-      
-      // Ensure algorithmData is an array before mapping
-      if (!Array.isArray(algorithmData)) {
-        console.error("algorithmData is not an array:", algorithmData);
-        return [];
-      }
-      
-      return algorithmData.map(algo => ({
-        algorithm: algo.algorithm_name || algo.name || algo.algorithm || 'Unknown',
-        meanShots: algo.mean_shots?.toFixed(2) || 'N/A',
-        medianShots: algo.median_shots || 'N/A',
-        stdDev: algo.std_dev?.toFixed(2) || 'N/A',
-        minShots: algo.min_shots || 'N/A',
-        maxShots: algo.max_shots || 'N/A',
-        totalSimulations: algo.total_simulations || 'N/A'
+    } else if (resultType === 'comparison' && results.algorithms) {
+      // Multiple algorithm comparison
+      return results.algorithms.map(algo => ({
+        algorithm: algo.name,
+        meanShots: algo.mean_shots?.toFixed(2),
+        medianShots: algo.median_shots,
+        stdDev: algo.std_dev?.toFixed(2),
+        minShots: algo.min_shots,
+        maxShots: algo.max_shots,
+        totalSimulations: algo.total_simulations
       }));
     }
 
@@ -122,9 +104,7 @@ function Dashboard() {
           borderRadius: '10px',
           padding: '20px',
           marginBottom: '25px',
-          boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-          position: 'relative',
-          zIndex: 1000
+          boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
         }}>
           <h3 style={{
             color: '#155724',
@@ -187,7 +167,7 @@ function Dashboard() {
               </thead>
               <tbody>
                 {performanceSummary.map((algo, index) => {
-                  const isP2M2Optimized = algo.algorithm && algo.algorithm.toLowerCase().includes('p2m2 optimized');
+                  const isP2M2Optimized = algo.algorithm.toLowerCase().includes('p2m2 optimized');
                   return (
                     <tr key={index} style={{
                       backgroundColor: index % 2 === 0 ? '#f8f9fa' : 'white',
@@ -243,7 +223,7 @@ function Dashboard() {
                         color: '#6c757d',
                         fontSize: '0.9em'
                       }}>
-                        {typeof algo.totalSimulations === 'number' ? algo.totalSimulations.toLocaleString() : algo.totalSimulations}
+                        {algo.totalSimulations?.toLocaleString()}
                       </td>
                     </tr>
                   );
