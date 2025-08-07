@@ -55,7 +55,12 @@ function ControlPanel({ onRunSimulation, onRunComparison, isLoading }) {
       <h2>Control Panel</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Targeting Algorithm(s):</label>
+          <label>
+            Targeting Algorithm(s):
+            <button type="button" onClick={fetchAlgorithms} className="reload-button" disabled={isLoading}>
+              &#x21bb;
+            </button>
+          </label>
           <Select
             isMulti
             options={allAlgorithms}
@@ -96,8 +101,8 @@ function ControlPanel({ onRunSimulation, onRunComparison, isLoading }) {
           </div>
         </div>
 
-        <button type="submit" className="run-button" disabled={isLoading || selectedAlgorithms.size === 0}>
-          {isLoading ? 'Running...' : `Run Simulation (${selectedAlgorithms.size})`}
+        <button type="submit" className="run-button" disabled={isLoading || selectedAlgorithms.length === 0}>
+          {isLoading ? 'Running...' : `Run Simulation (${selectedAlgorithms.length})`}
         </button>
       </form>
     </div>
