@@ -76,7 +76,4 @@ yarn-error.log*
 .env.local
 .env.development.local
 .env.test.local
-.env.production.local__pycache__/
-*.pyc
-*.pyo
-*.pyd
+.env.production.local

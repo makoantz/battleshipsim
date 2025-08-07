@@ -7,7 +7,7 @@ function ControlPanel({ onRunSimulation, onRunComparison, isLoading }) {
   const [allAlgorithms, setAllAlgorithms] = useState([]);
   const [selectedAlgorithms, setSelectedAlgorithms] = useState([]);
   const [numSimulations, setNumSimulations] = useState(1000);
-  const [placementStrategy, setPlacementStrategy] = useState('random_each_round');
+  const [placementStrategy] = useState('random_each_round'); // Removed setPlacementStrategy
 
   useEffect(() => {
     const fetchAlgorithms = async () => {
