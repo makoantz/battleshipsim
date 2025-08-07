@@ -5,98 +5,83 @@ from typing import Dict, List, Type, Any
 # Import the base class and types for checking and instantiation
 from .base import TargetingAlgorithm, ShipConfiguration
 
-# The global registry. It will map a unique string ID to a dictionary
-# containing the algorithm's class and its user-friendly name.
-# e.g., {'huntandtarget': {'class': HuntAndTarget, 'name': 'Hunt and Target'}}
+# Import the JSON registry components
+from .json_registry import get_available_json_algorithms, get_json_algorithm_instance, JSON_ALGORITHM_REGISTRY
+
+# The global registry for classic, class-based algorithms.
 ALGORITHM_REGISTRY: Dict[str, Dict[str, Any]] = {}
 
 
 def discover_algorithms():
     """
     Dynamically discovers and registers all TargetingAlgorithm subclasses.
-
-    This function scans the 'app.algorithms' package, imports all modules within it,
-    and finds any classes that inherit from TargetingAlgorithm. It populates
-    the ALGORITHM_REGISTRY.
-
-    This function should be called once when the application starts.
+    This function scans the 'app.algorithms' package for Python-based algorithms.
     """
-    # Import the package where this code resides, using the full path from the root
     import app.algorithms
 
-    # Iterate over all modules in the 'app.algorithms' package path
     for _, module_name, _ in pkgutil.iter_modules(app.algorithms.__path__, prefix=app.algorithms.__name__ + '.'):
-        # Import the module dynamically
+        # Skip the JSON registry module to prevent circular dependencies or unexpected behavior
+        if 'json_registry' in module_name:
+            continue
+
         module = __import__(module_name, fromlist=["*"])
 
-        # Now, inspect the imported module for classes
         for _, member_class in inspect.getmembers(module, inspect.isclass):
-            # Check three conditions:
-            # 1. Is the member a subclass of our base class?
-            # 2. Is it not the base class itself?
-            # 3. Is it defined in the currently inspected module (prevents re-registering base class)
             if (issubclass(member_class, TargetingAlgorithm) and
                     member_class is not TargetingAlgorithm and
                     member_class.__module__ == module.__name__):
 
-                # Use the lowercase class name as the unique ID
-                algo_id = member_class.__name__.lower()
+                # Prevent registering the GenericAlgorithm class itself in this registry
+                if member_class.__name__ == 'GenericAlgorithm':
+                    continue
 
-                # To get the friendly name, we must instantiate the class.
-                # We assume the constructor can be called with dummy data.
+                algo_id = member_class.__name__.lower()
                 temp_instance = member_class(board_size=10, ship_config=[])
                 
                 ALGORITHM_REGISTRY[algo_id] = {
                     "class": member_class,
                     "name": temp_instance.name
                 }
-                print(f"Discovered and registered algorithm: id='{algo_id}', name='{temp_instance.name}'")
+                print(f"Discovered and registered Python algorithm: id='{algo_id}', name='{temp_instance.name}'")
 
 
 def get_algorithm_instance(algo_id: str, board_size: int, ship_config: ShipConfiguration) -> TargetingAlgorithm:
     """
-    Factory function to create an instance of a registered algorithm.
-
-    This is the primary way the simulation engine will get an algorithm object
-    to work with.
-
-    Args:
-        algo_id (str): The unique ID of the algorithm (e.g., 'randomsearch').
-        board_size (int): The board dimension to pass to the algorithm's constructor.
-        ship_config (ShipConfiguration): The ship list to pass to the constructor.
-
-    Returns:
-        An instance of the requested TargetingAlgorithm subclass.
-
-    Raises:
-        ValueError: If the requested algo_id is not in the registry.
+    Factory function to create an instance of any registered algorithm (Python or JSON).
+    It first checks the classic Python algorithm registry, then the JSON registry.
     """
-    if algo_id not in ALGORITHM_REGISTRY:
-        raise ValueError(f"Unknown algorithm ID: '{algo_id}'. Available: {list(ALGORITHM_REGISTRY.keys())}")
+    # Try to get the instance from the classic registry first
+    if algo_id in ALGORITHM_REGISTRY:
+        algo_class: Type[TargetingAlgorithm] = ALGORITHM_REGISTRY[algo_id]['class']
+        return algo_class(board_size=board_size, ship_config=ship_config)
 
-    algo_class: Type[TargetingAlgorithm] = ALGORITHM_REGISTRY[algo_id]['class']
-    return algo_class(board_size=board_size, ship_config=ship_config)
+    # If not found, try the JSON registry
+    if algo_id in JSON_ALGORITHM_REGISTRY:
+        return get_json_algorithm_instance(algo_id, board_size, ship_config)
+
+    # If it's not in either, raise an error
+    all_algos = list(ALGORITHM_REGISTRY.keys()) + list(JSON_ALGORITHM_REGISTRY.keys())
+    raise ValueError(f"Unknown algorithm ID: '{algo_id}'. Available: {all_algos}")
 
 
 def get_available_algorithms() -> List[Dict[str, str]]:
     """
-    Returns a list of available algorithms, formatted for API responses.
-
-    This is used to populate the dropdown menu on the frontend.
-
-    Returns:
-        A list of dictionaries, e.g., [{'id': 'huntandtarget', 'name': 'Hunt and Target'}]
+    Returns a combined list of available algorithms (both Python and JSON),
+    formatted for API responses.
     """
-    # Sort the results alphabetically by the algorithm's friendly name for a better UX
-    return sorted(
-        [
-            {"id": key, "name": value["name"]}
-            for key, value in ALGORITHM_REGISTRY.items()
-        ],
-        key=lambda x: x['name']
-    )
+    # Get algorithms from the classic registry
+    classic_algos = [
+        {"id": key, "name": value["name"]}
+        for key, value in ALGORITHM_REGISTRY.items()
+    ]
+
+    # Get algorithms from the JSON registry
+    json_algos = get_available_json_algorithms()
+
+    # Combine and sort the lists
+    all_algorithms = classic_algos + json_algos
+    return sorted(all_algorithms, key=lambda x: x['name'])
 
 # --- Initial Discovery ---
-# Run the discovery process as soon as this module is imported.
-# This ensures the registry is populated when the app starts.
+# Run discovery for both types of algorithms when the app starts.
 discover_algorithms()

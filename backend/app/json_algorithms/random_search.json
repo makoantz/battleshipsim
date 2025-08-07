@@ -1,0 +1,14 @@
+{
+  "name": "Random Search (JSON)",
+  "description": "A simple algorithm that fires at random, valid squares, loaded from a JSON file.",
+  "initial_state": "SHOOTING",
+  "states": {
+    "SHOOTING": {
+      "next_shot": [
+        {
+          "action": "generate_random_shot"
+        }
+      ]
+    }
+  }
+}
