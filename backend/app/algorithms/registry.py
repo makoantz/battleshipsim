@@ -71,12 +71,15 @@ def get_available_algorithms() -> List[Dict[str, str]]:
     """
     # Get algorithms from the classic registry
     classic_algos = [
-        {"id": key, "name": value["name"]}
+        {"id": key, "name": value["name"], "is_json": False}
         for key, value in ALGORITHM_REGISTRY.items()
     ]
 
-    # Get algorithms from the JSON registry
-    json_algos = get_available_json_algorithms()
+    # Get algorithms from the JSON registry and add the is_json flag
+    json_algos = [
+        {**algo, "is_json": True}
+        for algo in get_available_json_algorithms()
+    ]
 
     # Combine and sort the lists
     all_algorithms = classic_algos + json_algos

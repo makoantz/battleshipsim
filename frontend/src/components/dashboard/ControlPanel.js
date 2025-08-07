@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import Select from 'react-select';
 import { getAlgorithms } from '../../api/simulationService';
 import './ControlPanel.css';
 
 function ControlPanel({ onRunSimulation, onRunComparison, isLoading }) {
   const [allAlgorithms, setAllAlgorithms] = useState([]);
-  const [selectedAlgorithms, setSelectedAlgorithms] = useState(new Set());
+  const [selectedAlgorithms, setSelectedAlgorithms] = useState([]);
   const [numSimulations, setNumSimulations] = useState(1000);
   const [placementStrategy, setPlacementStrategy] = useState('random_each_round');
 
@@ -12,7 +13,12 @@ function ControlPanel({ onRunSimulation, onRunComparison, isLoading }) {
     const fetchAlgorithms = async () => {
       try {
         const fetchedAlgorithms = await getAlgorithms();
-        setAllAlgorithms(fetchedAlgorithms);
+        // Format for react-select
+        const formattedAlgos = fetchedAlgorithms.map(algo => ({
+          value: algo.id,
+          label: algo.name
+        }));
+        setAllAlgorithms(formattedAlgos);
       } catch (error) {
         console.error("Failed to fetch algorithms:", error);
       }
@@ -20,19 +26,13 @@ function ControlPanel({ onRunSimulation, onRunComparison, isLoading }) {
     fetchAlgorithms();
   }, []);
 
-  const handleAlgorithmToggle = (algoId) => {
-    const newSelection = new Set(selectedAlgorithms);
-    if (newSelection.has(algoId)) {
-      newSelection.delete(algoId);
-    } else {
-      newSelection.add(algoId);
-    }
-    setSelectedAlgorithms(newSelection);
+  const handleAlgorithmChange = (selectedOptions) => {
+    setSelectedAlgorithms(selectedOptions || []);
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const selectedList = Array.from(selectedAlgorithms);
+    const selectedList = selectedAlgorithms.map(opt => opt.value);
     if (selectedList.length === 0) {
       alert("Please select at least one algorithm.");
       return;
@@ -56,21 +56,16 @@ function ControlPanel({ onRunSimulation, onRunComparison, isLoading }) {
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label>Targeting Algorithm(s):</label>
-          <div className="checkbox-group">
-            {allAlgorithms.map((algo) => (
-              // **MODIFICATION HERE**
-              // The input is now INSIDE the label for better alignment and accessibility.
-              <label key={algo.id} className="checkbox-label">
-                <input
-                  type="checkbox"
-                  checked={selectedAlgorithms.has(algo.id)}
-                  onChange={() => handleAlgorithmToggle(algo.id)}
-                  disabled={isLoading}
-                />
-                {algo.name}
-              </label>
-            ))}
-          </div>
+          <Select
+            isMulti
+            options={allAlgorithms}
+            value={selectedAlgorithms}
+            onChange={handleAlgorithmChange}
+            className="react-select-container"
+            classNamePrefix="react-select"
+            placeholder="Search and select algorithms..."
+            isDisabled={isLoading}
+          />
         </div>
 
         <div className="form-group">

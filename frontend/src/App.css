@@ -22,6 +22,32 @@
   color: #aeb8c4;
 }
 
+.App-nav {
+  margin-top: 20px;
+}
+
+.nav-button {
+  background-color: #61dafb;
+  border: none;
+  color: #282c34;
+  padding: 10px 20px;
+  margin: 0 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.nav-button:hover {
+  background-color: #4fa8c2;
+}
+
+.nav-button.active {
+  background-color: #fff;
+  color: #282c34;
+  font-weight: bold;
+}
+
 .App-main {
   padding: 20px;
 }
