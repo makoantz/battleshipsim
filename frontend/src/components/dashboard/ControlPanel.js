@@ -9,20 +9,21 @@ function ControlPanel({ onRunSimulation, onRunComparison, isLoading }) {
   const [numSimulations, setNumSimulations] = useState(1000);
   const [placementStrategy] = useState('random_each_round'); // Removed setPlacementStrategy
 
+  const fetchAlgorithms = async () => {
+    try {
+      const fetchedAlgorithms = await getAlgorithms();
+      // Format for react-select
+      const formattedAlgos = fetchedAlgorithms.map(algo => ({
+        value: algo.id,
+        label: algo.name
+      }));
+      setAllAlgorithms(formattedAlgos);
+    } catch (error) {
+      console.error("Failed to fetch algorithms:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchAlgorithms = async () => {
-      try {
-        const fetchedAlgorithms = await getAlgorithms();
-        // Format for react-select
-        const formattedAlgos = fetchedAlgorithms.map(algo => ({
-          value: algo.id,
-          label: algo.name
-        }));
-        setAllAlgorithms(formattedAlgos);
-      } catch (error) {
-        console.error("Failed to fetch algorithms:", error);
-      }
-    };
     fetchAlgorithms();
   }, []);
 
@@ -68,8 +69,9 @@ function ControlPanel({ onRunSimulation, onRunComparison, isLoading }) {
             onChange={handleAlgorithmChange}
             className="react-select-container"
             classNamePrefix="react-select"
-            placeholder="Search and select algorithms..."
+            placeholder="Select algorithms..."
             isDisabled={isLoading}
+            closeMenuOnSelect={false}
           />
         </div>
 
