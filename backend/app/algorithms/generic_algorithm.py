@@ -78,14 +78,16 @@ class GenericAlgorithm(TargetingAlgorithm):
         for transition in transitions:
             if self._evaluate_condition(transition["condition"], last_shot_result, hit_history):
                 self.current_state = transition["next_state"]
-                self._execute_on_entry_actions()
+                # Pass the last hit as context to the entry actions
+                last_hit = hit_history[-1] if last_shot_result == "HIT" and hit_history else None
+                self._execute_on_entry_actions(last_hit)
                 break  # Assume only one transition per turn
 
-    def _execute_on_entry_actions(self):
+    def _execute_on_entry_actions(self, last_hit: Tuple[int, int] | None = None):
         state_config = self.config["states"].get(self.current_state, {})
         on_entry_actions = state_config.get("on_entry", [])
         for action_config in on_entry_actions:
-            self._execute_action(action_config, None) # No hit context on entry
+            self._execute_action(action_config, last_hit)
 
     def _get_next_shot_from_actions(self, hit_history: HitHistory) -> Tuple[int, int] | None:
         state_config = self.config["states"].get(self.current_state, {})
